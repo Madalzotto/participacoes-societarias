@@ -1,0 +1,66 @@
+name: Atualizar base da Receita
+
+# Todo dia confere se a Receita publicou um mês novo; só baixa e processa quando há novidade.
+on:
+  schedule:
+    - cron: '17 10 * * *'   # 07:17 em Brasília
+  workflow_dispatch:
+    inputs:
+      forcar:
+        description: 'Reprocessar mesmo sem mês novo'
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicacao
+  cancel-in-progress: false
+
+jobs:
+  verificar:
+    runs-on: ubuntu-latest
+    outputs:
+      mes: ${{ steps.v.outputs.mes }}
+      novo: ${{ steps.v.outputs.novo }}
+    steps:
+      - uses: actions/checkout@v4
+      - id: v
+        name: Verificar mês mais recente na Receita
+        shell: pwsh
+        env:
+          FORCAR: ${{ inputs.forcar }}
+        run: ./scripts/atualizar.ps1 -Etapa verificar
+
+  publicar:
+    needs: verificar
+    if: needs.verificar.outputs.novo == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 240
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Baixar arquivos da Receita e gerar a API
+        shell: pwsh
+        run: ./scripts/atualizar.ps1 -Etapa processar -Mes '${{ needs.verificar.outputs.mes }}'
+
+      # O site (página + API) vai para a branch gh-pages num commit único, para o repositório não crescer a cada mês
+      - name: Publicar no GitHub Pages
+        run: |
+          cd site
+          git init -q -b gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -q -m "Base CNPJ ${{ needs.verificar.outputs.mes }}"
+          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+
+      # O commit mensal também mantém o agendamento ativo (o GitHub pausa agendamentos de repositórios parados há 60 dias)
+      - name: Registrar mês publicado
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add ultima-atualizacao.json
+          git commit -q -m "Base de ${{ needs.verificar.outputs.mes }} publicada"
+          git push -q

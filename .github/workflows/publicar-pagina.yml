@@ -1,0 +1,48 @@
+name: Publicar página
+
+# Quando só a página (index.html) muda, atualiza o site sem reprocessar a base.
+on:
+  push:
+    branches: [main]
+    paths: [index.html]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: publicacao
+  cancel-in-progress: false
+
+jobs:
+  pagina:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          path: main
+
+      - name: Verificar se a base já foi publicada
+        id: gh
+        working-directory: main
+        run: |
+          if git ls-remote --exit-code --heads origin gh-pages > /dev/null; then echo "existe=true" >> "$GITHUB_OUTPUT"
+          else echo "existe=false" >> "$GITHUB_OUTPUT"; echo "A branch gh-pages ainda não existe: rode o workflow 'Atualizar base da Receita' primeiro."; fi
+
+      - uses: actions/checkout@v4
+        if: steps.gh.outputs.existe == 'true'
+        with:
+          ref: gh-pages
+          path: site
+
+      - name: Copiar a página e publicar
+        if: steps.gh.outputs.existe == 'true'
+        working-directory: site
+        run: |
+          cp ../main/index.html index.html
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add index.html
+          git diff --cached --quiet && { echo "Página sem mudanças."; exit 0; }
+          git commit -q -m "Página atualizada"
+          git push -q
