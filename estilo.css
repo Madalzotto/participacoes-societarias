@@ -1,28 +1,96 @@
-body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45; color: #000; background: #fff; max-width: 980px; margin: 0 auto; padding: 8px 16px 40px; }
-h1 { font-size: 22px; margin: 14px 0 6px; }
-h2 { font-size: 17px; margin: 22px 0 6px; }
+/* cores: claro por padrão; escuro quando o sistema pede ou quando a pessoa escolhe no botão */
+:root {
+  color-scheme: light;
+  --fundo: #ffffff; --texto: #1b1b1b; --suave: #6b6b6b; --linha: #e6e6e6; --borda: #cccccc;
+  --campo: #ffffff; --link: #1a56b0; --erro: #b42318; --aviso: #c28a00;
+}
+:root[data-tema="escuro"] {
+  color-scheme: dark;
+  --fundo: #141414; --texto: #e6e6e6; --suave: #9a9a9a; --linha: #2b2b2b; --borda: #444444;
+  --campo: #1c1c1c; --link: #8ab4f8; --erro: #ff8a80; --aviso: #d4a72c;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    color-scheme: dark;
+    --fundo: #141414; --texto: #e6e6e6; --suave: #9a9a9a; --linha: #2b2b2b; --borda: #444444;
+    --campo: #1c1c1c; --link: #8ab4f8; --erro: #ff8a80; --aviso: #d4a72c;
+  }
+}
+
+* { box-sizing: border-box; }
+html { background: var(--fundo); }
+body {
+  margin: 0 auto; max-width: 900px; padding: 32px 20px 48px;
+  font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  color: var(--texto); background: var(--fundo);
+}
+a { color: var(--link); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1 { font-size: 20px; font-weight: 600; margin: 0; }
+h2 { font-size: 18px; font-weight: 600; margin: 32px 0 2px; }
 p { margin: 8px 0; }
-fieldset { border: 1px solid #999; margin: 12px 0; padding: 6px 12px 10px; }
-legend { font-weight: bold; padding: 0 4px; }
-table.form td { padding: 4px 8px 4px 0; vertical-align: top; }
-table.form td:first-child { white-space: nowrap; padding-top: 6px; }
-#q { width: 380px; max-width: 100%; font: inherit; padding: 3px 4px; }
-table.dados { border-collapse: collapse; width: 100%; margin: 8px 0; }
-table.dados th, table.dados td { border: 1px solid #999; padding: 3px 6px; text-align: left; vertical-align: top; }
-table.dados th { background: #e6e6e6; }
-.rolagem { overflow-x: auto; }
-.cnpj { font-family: "Courier New", Courier, monospace; white-space: nowrap; }
-.cinza { color: #555; }
-.erro { color: #c00; }
-.warn { background: #ffffcc; border: 1px solid #c9c98a; padding: 6px 8px; }
-ul.arvore, ul.arvore ul { list-style: none; margin: 0; padding-left: 22px; }
-ul.arvore { padding-left: 4px; }
-ul.arvore li { margin: 3px 0; padding-left: 14px; }
+
+/* topo */
+.topo { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.sub { margin: 2px 0 0; color: var(--suave); }
+.tema { font: inherit; font-size: 13px; color: var(--suave); background: none; border: 1px solid var(--borda); border-radius: 4px; padding: 3px 10px; cursor: pointer; white-space: nowrap; }
+.tema:hover { color: var(--texto); }
+
+/* pesquisa */
+.busca { margin: 28px 0 0; }
+.linha { display: flex; gap: 8px; }
+#q {
+  flex: 1; min-width: 0; font: inherit; color: var(--texto); background: var(--campo);
+  border: 1px solid var(--borda); border-radius: 4px; padding: 8px 10px;
+}
+#q:focus { outline: 2px solid var(--link); outline-offset: -1px; border-color: transparent; }
+#btnBuscar {
+  font: inherit; font-weight: 600; color: var(--fundo); background: var(--texto);
+  border: 1px solid var(--texto); border-radius: 4px; padding: 8px 18px; cursor: pointer;
+}
+#btnBuscar:hover { opacity: .85; }
+.opcoes { display: flex; flex-wrap: wrap; gap: 6px 20px; margin-top: 10px; font-size: 14px; color: var(--suave); }
+.opcoes label { cursor: pointer; }
+.opcoes select { font: inherit; color: var(--texto); background: var(--campo); border: 1px solid var(--borda); border-radius: 4px; padding: 1px 4px; }
+.status { font-size: 13px; color: var(--suave); margin: 14px 0 0; }
+
+/* mensagens */
+.cinza, .carregando { color: var(--suave); }
+.erro { color: var(--erro); }
+.warn { border-left: 3px solid var(--aviso); padding: 2px 0 2px 12px; }
+
+/* resultado */
+.meta { display: block; font-size: 13px; color: var(--suave); }
+.resumo { margin-top: 12px; }
+.acoes { display: flex; flex-wrap: wrap; gap: 4px 18px; font-size: 14px; margin: 12px 0 16px; padding-bottom: 12px; border-bottom: 1px solid var(--linha); }
+.acoes a.ativo { color: var(--texto); font-weight: 600; }
+.cnpj { font-variant-numeric: tabular-nums; white-space: nowrap; }
+
+/* árvore */
+ul.arvore, ul.arvore ul { list-style: none; margin: 0; padding: 0; }
+ul.arvore ul { margin-left: 6px; padding-left: 18px; border-left: 1px solid var(--linha); }
+/* todas as linhas começam no mesmo ponto; nas que abrem e fecham, o marcador fica no recuo à esquerda */
+ul.arvore li { margin: 10px 0; padding-left: 18px; }
 ul.arvore li.grupo { padding-left: 0; }
-ul.arvore summary { cursor: pointer; }
-ul.arvore a.nm { font-weight: bold; }
-ul.notas li { margin-bottom: 4px; }
-@media (max-width: 600px) {
-  table.form td { display: block; padding: 2px 0; }
-  #q { width: 100%; }
+ul.arvore summary { list-style: none; position: relative; padding-left: 18px; cursor: pointer; }
+ul.arvore summary::-webkit-details-marker { display: none; }
+ul.arvore summary::before { content: "\25B8"; position: absolute; left: 2px; top: 0; color: var(--suave); }
+ul.arvore details[open] > summary::before { content: "\25BE"; }
+ul.arvore .obs { display: block; font-size: 13px; color: var(--suave); font-style: italic; }
+
+/* tabelas */
+.rolagem { overflow-x: auto; }
+table.dados { border-collapse: collapse; width: 100%; font-size: 14px; margin: 8px 0; }
+table.dados th, table.dados td { text-align: left; vertical-align: top; padding: 7px 10px 7px 0; border-bottom: 1px solid var(--linha); }
+table.dados th { font-size: 12px; font-weight: 600; color: var(--suave); }
+
+/* rodapé */
+.rodape { margin-top: 48px; padding-top: 14px; border-top: 1px solid var(--linha); font-size: 13px; color: var(--suave); }
+.rodape summary { cursor: pointer; }
+.rodape ul { padding-left: 18px; margin: 8px 0; }
+.rodape li { margin-bottom: 4px; }
+
+@media (max-width: 560px) {
+  body { padding-top: 20px; }
+  .linha { flex-direction: column; }
 }
