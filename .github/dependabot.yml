@@ -1,0 +1,7 @@
+# Abre pull requests quando sair versão nova das ações usadas nos workflows (elas ficam fixadas por commit)
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

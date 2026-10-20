@@ -1,14 +1,13 @@
 name: Publicar página
 
-# Quando só a página (index.html) muda, atualiza o site sem reprocessar a base.
+# Quando só a página muda (index.html, app.js, estilo.css), atualiza o site sem reprocessar a base.
 on:
   push:
     branches: [main]
-    paths: [index.html]
+    paths: [index.html, app.js, estilo.css]
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
   group: publicacao
@@ -17,19 +16,23 @@ concurrency:
 jobs:
   pagina:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         with:
           path: main
+          persist-credentials: false
 
       - name: Verificar se a base já foi publicada
         id: gh
         working-directory: main
         run: |
-          if git ls-remote --exit-code --heads origin gh-pages > /dev/null; then echo "existe=true" >> "$GITHUB_OUTPUT"
+          if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" gh-pages > /dev/null; then echo "existe=true" >> "$GITHUB_OUTPUT"
           else echo "existe=false" >> "$GITHUB_OUTPUT"; echo "A branch gh-pages ainda não existe: rode o workflow 'Atualizar base da Receita' primeiro."; fi
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
         if: steps.gh.outputs.existe == 'true'
         with:
           ref: gh-pages
@@ -39,10 +42,10 @@ jobs:
         if: steps.gh.outputs.existe == 'true'
         working-directory: site
         run: |
-          cp ../main/index.html index.html
+          cp ../main/index.html ../main/app.js ../main/estilo.css .
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html
+          git add index.html app.js estilo.css
           git diff --cached --quiet && { echo "Página sem mudanças."; exit 0; }
           git commit -q -m "Página atualizada"
           git push -q

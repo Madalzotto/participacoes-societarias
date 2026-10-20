@@ -11,8 +11,8 @@ on:
         type: boolean
         default: false
 
-permissions:
-  contents: write
+# nenhuma permissão por padrão; cada job pede só o que usa
+permissions: {}
 
 concurrency:
   group: publicacao
@@ -21,11 +21,16 @@ concurrency:
 jobs:
   verificar:
     runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: read
     outputs:
       mes: ${{ steps.v.outputs.mes }}
       novo: ${{ steps.v.outputs.novo }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+        with:
+          persist-credentials: false
       - id: v
         name: Verificar mês mais recente na Receita
         shell: pwsh
@@ -38,29 +43,41 @@ jobs:
     if: needs.verificar.outputs.novo == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 240
+    permissions:
+      contents: write
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Baixar arquivos da Receita e gerar a API
         shell: pwsh
-        run: ./scripts/atualizar.ps1 -Etapa processar -Mes '${{ needs.verificar.outputs.mes }}'
+        env:
+          MES: ${{ needs.verificar.outputs.mes }}
+        run: |
+          if ($env:MES -notmatch '^\d{4}-\d{2}$') { throw "Mês inválido: $env:MES" }
+          ./scripts/atualizar.ps1 -Etapa processar -Mes $env:MES
 
       # O site (página + API) vai para a branch gh-pages num commit único, para o repositório não crescer a cada mês
       - name: Publicar no GitHub Pages
+        env:
+          MES: ${{ needs.verificar.outputs.mes }}
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REPO: ${{ github.repository }}
         run: |
           cd site
           git init -q -b gh-pages
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -q -m "Base CNPJ ${{ needs.verificar.outputs.mes }}"
-          git push -q -f "https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git" gh-pages
+          git commit -q -m "Base CNPJ $MES"
+          git push -q -f "https://x-access-token:${TOKEN}@github.com/${REPO}.git" gh-pages
 
       # O commit mensal também mantém o agendamento ativo (o GitHub pausa agendamentos de repositórios parados há 60 dias)
       - name: Registrar mês publicado
+        env:
+          MES: ${{ needs.verificar.outputs.mes }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add ultima-atualizacao.json
-          git commit -q -m "Base de ${{ needs.verificar.outputs.mes }} publicada"
+          git commit -q -m "Base de $MES publicada"
           git push -q

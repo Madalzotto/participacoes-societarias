@@ -14,7 +14,7 @@ empresa X, lista as empresas Y em que X aparece como sócia, em vários níveis.
    `scripts/atualizar.ps1`. Esse script guarda só os vínculos em que o sócio é pessoa jurídica,
    sem CPFs.
 3. O resultado é uma API estática publicada no GitHub Pages (branch `gh-pages`), junto com a página
-   `index.html`, que faz as consultas.
+   (`index.html`, `app.js`, `estilo.css`), que faz as consultas.
 
 Para forçar uma atualização: aba **Actions** → *Atualizar base da Receita* → **Run workflow**
 (marque "Reprocessar mesmo sem mês novo").
@@ -38,12 +38,17 @@ Itens de `p` e `c`: `[CNPJ ou raiz, qualificação, data de entrada (AAAAMMDD), 
 - Em Sociedades Anônimas o QSA lista diretores e conselheiros, não acionistas.
 - A base é mensal: participações mais recentes só aparecem na publicação seguinte.
 
-## Rodar no próprio computador
+## Segurança
+
+- A página só carrega script e estilo do próprio site (Content-Security-Policy) e só se conecta à API deste
+  repositório, à BrasilAPI e à Minha Receita. Os dados recebidos são validados e escapados antes de aparecer na tela.
+- O CSV exportado neutraliza textos que o Excel interpretaria como fórmula.
+- Os workflows rodam com permissões mínimas e usam ações fixadas por commit (atualizadas pelo Dependabot).
+
+## Gerar a base no próprio computador
 
 Requer PowerShell 7 (`pwsh`):
 
 ```powershell
 ./scripts/atualizar.ps1 -Etapa processar          # baixa o mês mais recente e gera site/
 ```
-
-A página também funciona sozinha (abrindo o `index.html`), com os arquivos da Receita arrastados para ela.
