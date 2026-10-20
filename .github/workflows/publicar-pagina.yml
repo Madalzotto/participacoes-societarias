@@ -20,7 +20,7 @@ jobs:
     permissions:
       contents: write
     steps:
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
           path: main
           persist-credentials: false
@@ -32,7 +32,7 @@ jobs:
           if git ls-remote --exit-code --heads "https://github.com/${{ github.repository }}.git" gh-pages > /dev/null; then echo "existe=true" >> "$GITHUB_OUTPUT"
           else echo "existe=false" >> "$GITHUB_OUTPUT"; echo "A branch gh-pages ainda não existe: rode o workflow 'Atualizar base da Receita' primeiro."; fi
 
-      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         if: steps.gh.outputs.existe == 'true'
         with:
           ref: gh-pages
