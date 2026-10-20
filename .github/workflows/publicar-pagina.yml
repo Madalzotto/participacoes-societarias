@@ -1,10 +1,10 @@
 name: Publicar página
 
-# Quando só a página muda (index.html, app.js, estilo.css), atualiza o site sem reprocessar a base.
+# Quando só a página muda (index.html, app.js, tema.js, estilo.css), atualiza o site sem reprocessar a base.
 on:
   push:
     branches: [main]
-    paths: [index.html, app.js, estilo.css]
+    paths: [index.html, app.js, tema.js, estilo.css]
   workflow_dispatch:
 
 permissions: {}
@@ -42,10 +42,10 @@ jobs:
         if: steps.gh.outputs.existe == 'true'
         working-directory: site
         run: |
-          cp ../main/index.html ../main/app.js ../main/estilo.css .
+          cp ../main/index.html ../main/app.js ../main/tema.js ../main/estilo.css .
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html app.js estilo.css
+          git add index.html app.js tema.js estilo.css
           git diff --cached --quiet && { echo "Página sem mudanças."; exit 0; }
           git commit -q -m "Página atualizada"
           git push -q

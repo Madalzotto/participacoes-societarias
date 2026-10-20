@@ -6,61 +6,58 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; connect-src 'self' https://madalzotto.github.io https://brasilapi.com.br https://minhareceita.org; base-uri 'none'; form-action 'none'; upgrade-insecure-requests">
 <meta name="referrer" content="no-referrer">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Consulta de Participações Societárias</title>
+<meta name="color-scheme" content="light dark">
+<title>Participações societárias</title>
+<script src="tema.js"></script>
 <link rel="stylesheet" href="estilo.css">
 <script src="app.js" defer></script>
 </head>
 <body>
 
-<h1>Consulta de Participações Societárias</h1>
-<p>Informe o CNPJ ou parte do nome de uma empresa para ver de quais empresas ela é sócia, ou quais empresas são sócias dela.
-Fonte: Quadro de Sócios e Administradores (QSA) dos dados abertos do CNPJ, da Receita Federal.</p>
-<p id="status" class="cinza">Verificando a base de dados...</p>
+<header class="topo">
+  <div>
+    <h1>Participações societárias</h1>
+    <p class="sub">De quais empresas um CNPJ é sócio, e quais empresas são sócias dele.</p>
+  </div>
+  <button type="button" id="btnTema" class="tema">Modo escuro</button>
+</header>
 
-<form id="form">
-<fieldset>
-<legend>Pesquisa</legend>
-<table class="form">
-  <tr>
-    <td><label for="q">CNPJ ou nome:</label></td>
-    <td><input type="text" id="q" maxlength="120" autocomplete="off" spellcheck="false" placeholder="00.000.000/0000-00"> <button type="submit" id="btnBuscar">Pesquisar</button></td>
-  </tr>
-  <tr>
-    <td>Mostrar:</td>
-    <td>
-      <label><input type="radio" name="dir" value="desce" checked> empresas das quais ela é sócia</label><br>
-      <label><input type="radio" name="dir" value="sobe"> empresas que são sócias dela</label>
-    </td>
-  </tr>
-  <tr>
-    <td><label for="niveis">Níveis:</label></td>
-    <td>
+<form id="form" class="busca">
+  <div class="linha">
+    <input type="search" id="q" maxlength="120" autocomplete="off" spellcheck="false" placeholder="CNPJ ou nome da empresa" aria-label="CNPJ ou nome da empresa">
+    <button type="submit" id="btnBuscar">Pesquisar</button>
+  </div>
+  <div class="opcoes">
+    <label><input type="radio" name="dir" value="desce" checked> Empresas das quais é sócia</label>
+    <label><input type="radio" name="dir" value="sobe"> Empresas sócias dela</label>
+    <label>Níveis
       <select id="niveis">
         <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option value="10">10</option>
       </select>
-    </td>
-  </tr>
-  <tr>
-    <td></td>
-    <td><label><input type="checkbox" id="online" checked> consultar situação cadastral e município na BrasilAPI</label></td>
-  </tr>
-</table>
-</fieldset>
+    </label>
+    <label><input type="checkbox" id="online" checked> Situação e município (BrasilAPI)</label>
+  </div>
 </form>
 
-<div id="res"></div>
+<p id="status" class="status">Verificando a base de dados...</p>
 
-<h2>Observações</h2>
-<ul class="notas">
-  <li>São listadas as empresas em cujo QSA o CNPJ pesquisado aparece como sócio pessoa jurídica. A comparação usa a raiz do CNPJ (8 primeiros caracteres), então matriz e filiais contam como a mesma empresa.</li>
-  <li>A Receita não publica o percentual de participação de cada sócio.</li>
-  <li>Em sociedades anônimas o QSA traz diretores e conselheiros, não acionistas. Participações em S.A. normalmente não aparecem.</li>
-  <li>Sócios estrangeiros sem CNPJ aparecem pelo nome, marcados como "exterior".</li>
-  <li>A Receita publica os dados uma vez por mês, e a base desta página é atualizada automaticamente quando sai um mês novo.
-    Situação cadastral e município vêm da <a href="https://brasilapi.com.br" target="_blank" rel="noopener noreferrer">BrasilAPI</a> ou da <a href="https://minhareceita.org" target="_blank" rel="noopener noreferrer">Minha Receita</a>, que recebem apenas o CNPJ consultado.</li>
-  <li>Se a base de dados estiver fora do ar, a opção "empresas que são sócias dela" ainda funciona, consultando o QSA pela internet, nível a nível.</li>
-</ul>
-<p class="cinza">Código-fonte: <a href="https://github.com/Madalzotto/participacoes-societarias" rel="noopener noreferrer">github.com/Madalzotto/participacoes-societarias</a></p>
+<main id="res"></main>
+
+<footer class="rodape">
+  <details>
+    <summary>Sobre os dados</summary>
+    <ul>
+      <li>Fonte: Quadro de Sócios e Administradores (QSA) dos dados abertos do CNPJ, da Receita Federal. A base é atualizada automaticamente quando a Receita publica um mês novo.</li>
+      <li>São listadas as empresas em cujo QSA o CNPJ pesquisado aparece como sócio pessoa jurídica. Matriz e filiais contam como a mesma empresa (raiz do CNPJ).</li>
+      <li>A Receita não publica o percentual de participação de cada sócio.</li>
+      <li>Em sociedades anônimas o QSA traz diretores e conselheiros, não acionistas. Participações em S.A. normalmente não aparecem.</li>
+      <li>Sócios estrangeiros sem CNPJ aparecem pelo nome, marcados como "exterior".</li>
+      <li>Situação cadastral e município vêm da <a href="https://brasilapi.com.br" target="_blank" rel="noopener noreferrer">BrasilAPI</a> ou da <a href="https://minhareceita.org" target="_blank" rel="noopener noreferrer">Minha Receita</a>, que recebem apenas o CNPJ consultado.</li>
+      <li>Se a base de dados estiver fora do ar, a opção "empresas sócias dela" ainda funciona, consultando o QSA pela internet.</li>
+    </ul>
+  </details>
+  <p><a href="https://github.com/Madalzotto/participacoes-societarias" rel="noopener noreferrer">Código-fonte</a></p>
+</footer>
 
 </body>
 </html>

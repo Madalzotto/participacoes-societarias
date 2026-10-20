@@ -122,7 +122,7 @@ $resumo = [IndexadorCnpj]::Executar([string[]] $socios, [string[]] $empresas, (J
 $mb = [math]::Round((Get-ChildItem $site -Recurse -File | Measure-Object Length -Sum).Sum / 1MB)
 Write-Host "Tamanho da API: $mb MB"
 if ($mb -gt 950) { throw "A API ficou com $mb MB, acima do limite de 1 GB do GitHub Pages." }
-foreach ($a in 'index.html', 'app.js', 'estilo.css') { Copy-Item (Join-Path $Raiz $a) (Join-Path $site $a) }
+foreach ($a in 'index.html', 'app.js', 'tema.js', 'estilo.css') { Copy-Item (Join-Path $Raiz $a) (Join-Path $site $a) }
 New-Item -ItemType File -Path (Join-Path $site '.nojekyll') -Force | Out-Null
 # só a execução com os arquivos oficiais registra o mês publicado (testes com arquivos locais não)
 if (-not $ArquivosLocais) {

@@ -300,11 +300,11 @@ function interpreta(txt) {
 function atualizaStatus() {
   const el = $('#status'); const nm = Nuvem.meta;
   if (nm) {
-    el.textContent = `Base de dados: Receita Federal, ${mesExtenso(nm.mes)} (${fmtN(nm.vinculos)} vínculos entre ${fmtN(nm.empresas)} empresas), atualizada automaticamente todo mês.`;
+    el.textContent = `Dados da Receita Federal de ${mesExtenso(nm.mes)}, com ${fmtN(nm.vinculos)} vínculos entre ${fmtN(nm.empresas)} empresas.`;
     const g = new Date(nm.geradoEm);
     el.title = isNaN(g) ? '' : 'Gerada em ' + g.toLocaleString('pt-BR');
   } else {
-    el.textContent = 'Base de dados indisponível no momento (sem internet ou fora do ar). Só a consulta de empresas sócias funciona, pelo QSA na internet.';
+    el.textContent = 'Base de dados indisponível no momento. Só a consulta de empresas sócias funciona, pelo QSA na internet.';
   }
 }
 
@@ -318,7 +318,7 @@ async function pesquisar() {
     return;
   }
   const token = ++buscaAtual;
-  $res.innerHTML = `<p>Pesquisando "${esc(txt)}"...</p>`;
+  $res.innerHTML = `<p class="carregando">Pesquisando "${esc(txt)}"...</p>`;
   try {
     const r2 = await buscaPorNomeNuvem(txt);
     if (token === buscaAtual) mostraCandidatos(r2.lista, txt, r2.aviso);
@@ -367,7 +367,7 @@ async function executa(chave, dir) {
   }
   document.querySelector(`input[name=dir][value=${dir}]`).checked = true;
   const viz = dir === 'desce' ? vizDesceNuvem : (semBase ? vizSobeOnline : vizSobeNuvem);
-  $res.innerHTML = `<p id="carregando">Pesquisando...</p>`;
+  $res.innerHTML = `<p id="carregando" class="carregando">Pesquisando...</p>`;
   if (semBase || usarOnline) consultaOnline(chave);
   let arv;
   try {
@@ -385,23 +385,27 @@ async function executa(chave, dir) {
 }
 
 /* ================= Resultado ================= */
-// nome (link para pesquisar a partir dele), CNPJ e dados que chegam depois (natureza, situação, município)
+// dados de uma empresa numa linha discreta: CNPJ, extra (qualificação), e o que chega depois (natureza, situação, município)
+function metaNo(ch, extra) {
+  const nat = naturezaDe(ch), sit = situacaoHtml(ch), loc = localDe(ch);
+  return `<span class="meta"><span class="cnpj">${esc(cnpjDe(ch))}</span>${extra || ''}`
+    + `<span class="nat">${nat ? ', ' + esc(nat) : ''}</span><span class="sit">${sit ? ', ' + sit : ''}</span><span class="loc">${loc ? ', ' + esc(loc) : ''}</span></span>`;
+}
+// nome (link para pesquisar a partir dele) e, embaixo, os dados
 function linhaNo(ch, dir, extra) {
   const nm = nomeDe(ch);
-  const nat = naturezaDe(ch), sit = situacaoHtml(ch), loc = localDe(ch);
   return `<a href="#" class="nm" data-acao="ir" data-chave="${esc(ch)}" data-dir="${dir}" title="Pesquisar a partir desta empresa">${nm ? esc(nm) : '(nome não disponível)'}</a>`
-    + ` | <span class="cnpj">${esc(cnpjDe(ch))}</span>${extra || ''}`
-    + `<span class="nat">${nat ? ' | ' + esc(nat) : ''}</span><span class="sit">${sit ? ' | ' + sit : ''}</span><span class="loc">${loc ? ' | ' + esc(loc) : ''}</span>`;
+    + metaNo(ch, extra);
 }
 
 function htmlNo(no, dir) {
   const quals = (no.quals || []).map(qualNome).filter(Boolean).join(' / ');
   const data = fmtData(no.data);
   const desc = (quals || 'Sócio') + (data ? ' desde ' + data : '');
-  const obs = no.ciclo ? ' <i>(participação cruzada: esta empresa já aparece acima)</i>'
-    : no.repetido ? ' <i>(já listada em outro ponto da árvore)</i>'
-    : no.temMais ? ` <i>(tem mais ${dir === 'desce' ? 'participações' : 'sócias'}; aumente o número de níveis)</i>` : '';
-  const linha = `<span data-no="${esc(no.chave)}">${linhaNo(no.chave, dir, ' | ' + esc(desc))}</span>${obs}`;
+  const obs = no.ciclo ? 'participação cruzada: esta empresa já aparece acima'
+    : no.repetido ? 'já listada em outro ponto da árvore'
+    : no.temMais ? `tem mais ${dir === 'desce' ? 'participações' : 'sócias'}; aumente o número de níveis` : '';
+  const linha = `<span data-no="${esc(no.chave)}">${linhaNo(no.chave, dir, ', ' + esc(desc))}</span>${obs ? `<span class="obs">${obs}</span>` : ''}`;
   if (!no.filhos.length) return `<li>${linha}</li>`;
   return `<li class="grupo"><details${no.nivel < 3 ? ' open' : ''}><summary>${linha}</summary><ul>${no.filhos.map(f => htmlNo(f, dir)).join('')}</ul></details></li>`;
 }
@@ -410,36 +414,38 @@ function renderResultado(arv, dir, prof, semBase) {
   const diretos = arv.filhos.length;
   const desce = dir === 'desce';
   const raiz = arv.raiz;
-  const nat = naturezaDe(raiz), sit = situacaoHtml(raiz), loc = localDe(raiz);
   const cab = `<div data-no="${esc(raiz)}">
       <h2 class="nm">${esc(nomeDe(raiz) || '(nome não disponível)')}</h2>
-      <p>CNPJ: <span class="cnpj">${esc(cnpjDe(raiz))}</span><span class="nat">${nat ? ' | ' + esc(nat) : ''}</span><span class="sit">${sit ? ' | ' + sit : ''}</span><span class="loc">${loc ? ' | ' + esc(loc) : ''}</span></p>
+      ${metaNo(raiz, '')}
     </div>`;
   let corpo;
   if (!diretos) {
     corpo = desce
-      ? `<p>Nenhuma empresa tem este CNPJ como sócio na base de dados.</p>
+      ? `<p class="resumo">Nenhuma empresa tem este CNPJ como sócio na base de dados.</p>
          <p class="cinza">Possíveis motivos: a empresa não tem participações; as participações são em sociedades anônimas (a Receita não lista acionistas);
          ou a participação é mais recente que a última publicação da Receita.</p>`
-      : `<p>Nenhum sócio pessoa jurídica encontrado. Os sócios desta empresa são pessoas físicas, ou ela não tem quadro societário na Receita (por exemplo, empresário individual ou S.A. que só lista diretores).</p>`;
+      : `<p class="resumo">Nenhum sócio pessoa jurídica encontrado.</p>
+         <p class="cinza">Os sócios desta empresa são pessoas físicas, ou ela não tem quadro societário na Receita (por exemplo, empresário individual ou S.A. que só lista diretores).</p>`;
   } else {
+    const resumo = desce
+      ? `É sócia de ${plural(diretos, 'empresa', 'empresas')} diretamente`
+      : `Tem ${plural(diretos, 'sócia', 'sócias')} pessoa jurídica`;
     corpo = `
-      <p>${desce ? 'Participações diretas' : 'Sócias pessoa jurídica diretas'}: <b>${fmtN(diretos)}</b>.
-         Total de empresas na árvore: <b>${fmtN(arv.distintas)}</b> (até ${plural(prof, 'nível', 'níveis')}).</p>
-      <p>Exibir como:
-        <label><input type="radio" name="vis" value="arvore" checked> lista</label>
-        <label><input type="radio" name="vis" value="tabela"> tabela</label>
-        &nbsp;|&nbsp; <a href="#" data-acao="expandir">expandir tudo</a>
-        &nbsp;|&nbsp; <a href="#" data-acao="recolher">recolher</a>
-        &nbsp;|&nbsp; <a href="#" data-acao="csv">exportar CSV</a>
-        <span id="infoOnline" class="cinza"></span></p>
+      <p class="resumo">${resumo}; ${plural(arv.distintas, 'empresa', 'empresas')} ao todo, em até ${plural(prof, 'nível', 'níveis')}.</p>
+      <div class="acoes">
+        <a href="#" data-vis="arvore" class="ativo">Lista</a>
+        <a href="#" data-vis="tabela">Tabela</a>
+        <a href="#" data-acao="expandir">Expandir tudo</a>
+        <a href="#" data-acao="recolher">Recolher</a>
+        <a href="#" data-acao="csv">Exportar CSV</a>
+        <span id="infoOnline" class="cinza"></span>
+      </div>
       <div id="vArvore"><ul class="arvore">${arv.filhos.map(f => htmlNo(f, dir)).join('')}</ul></div>
       <div id="vTabela" hidden>${tabelaHtml(arv, dir)}</div>
       ${arv.cortado ? `<p class="warn">A árvore passou de ${fmtN(LIMITE_NOS)} empresas e foi cortada. Reduza o número de níveis ou pesquise a partir de um ramo.</p>` : ''}`;
   }
   $res.innerHTML = cab
     + (semBase ? '<p class="warn">Base de dados indisponível: as sócias foram buscadas no QSA pela internet, uma a uma.</p>' : '')
-    + `<p><b>${desce ? 'Empresas das quais é sócia' : 'Empresas que são sócias dela'}</b></p>`
     + corpo;
 }
 
@@ -448,7 +454,7 @@ function tabelaHtml(arv, dir) {
   const rows = arv.linhas.map(l => `<tr data-no="${esc(l.chave)}">
     <td>${l.nivel}</td>
     <td class="cnpj">${esc(ehExterior(l.chave) ? 'exterior' : cnpjDe(l.chave))}</td>
-    <td>${linkIr(l.chave, dir, `<span class="nm">${esc(nomeDe(l.chave) || '(nome não disponível)')}</span>`, 'Pesquisar a partir desta empresa')}${l.ciclo ? ' <i>(cruzada)</i>' : l.repetido ? ' <i>(repetida)</i>' : ''}</td>
+    <td>${linkIr(l.chave, dir, `<span class="nm">${esc(nomeDe(l.chave) || '(nome não disponível)')}</span>`, 'Pesquisar a partir desta empresa')}${l.ciclo ? ' <span class="cinza">(cruzada)</span>' : l.repetido ? ' <span class="cinza">(repetida)</span>' : ''}</td>
     <td><span data-no="${esc(l.pai)}"><span class="nm">${esc(nomeDe(l.pai))}</span></span><br><span class="cnpj cinza">${ehExterior(l.pai) ? '' : esc(cnpjDe(l.pai))}</span></td>
     <td>${esc((l.quals || []).map(qualNome).join(' / '))}</td>
     <td>${fmtData(l.data)}</td>
@@ -464,7 +470,7 @@ function preencheNos(ch) {
   for (const el of $res.querySelectorAll(sel)) {
     const k = el.dataset.no;
     const meus = cls => [...el.querySelectorAll('.' + cls)].filter(x => x.closest('[data-no]') === el);
-    const sep = el.tagName === 'TR' ? '' : ' | ';
+    const sep = el.tagName === 'TR' ? '' : ', ';
     const nm = nomeDe(k);
     for (const x of meus('nm')) if (nm) x.textContent = nm;
     for (const x of meus('sit')) { const s = situacaoHtml(k); x.innerHTML = s ? sep + s : ''; }
@@ -483,7 +489,7 @@ async function enriquece(arv, token) {
     const d = await consultaOnline(c);
     if (token !== buscaAtual) return;
     feitos++; if (!d) falhas++;
-    const el = info(); if (el) el.textContent = feitos < alvo.length ? ` (consultando BrasilAPI: ${feitos} de ${alvo.length})` : '';
+    const el = info(); if (el) el.textContent = feitos < alvo.length ? `Consultando BrasilAPI: ${feitos} de ${alvo.length}` : '';
     preencheNos(c);
   }));
   if (token !== buscaAtual) return;
@@ -491,7 +497,7 @@ async function enriquece(arv, token) {
   const partes = [];
   if (falhas) partes.push(`${falhas} sem dados na BrasilAPI`);
   if (lista.length > max) partes.push(`BrasilAPI consultada só para as ${max} primeiras`);
-  if (el) el.textContent = partes.length ? ` (${partes.join('; ')})` : '';
+  if (el) el.textContent = partes.join('; ');
 }
 
 function exportaCsv() {
@@ -515,11 +521,14 @@ function exportaCsv() {
 /* ================= Eventos ================= */
 $('#form').addEventListener('submit', e => { e.preventDefault(); pesquisar(); });
 
-$res.addEventListener('change', e => {
-  if (e.target.name !== 'vis') return;
-  $('#vArvore').hidden = e.target.value !== 'arvore'; $('#vTabela').hidden = e.target.value !== 'tabela';
-});
 $res.addEventListener('click', e => {
+  const vis = e.target.closest('[data-vis]');
+  if (vis) {
+    e.preventDefault();
+    for (const a of $res.querySelectorAll('[data-vis]')) a.classList.toggle('ativo', a === vis);
+    $('#vArvore').hidden = vis.dataset.vis !== 'arvore'; $('#vTabela').hidden = vis.dataset.vis !== 'tabela';
+    return;
+  }
   const b = e.target.closest('[data-acao]'); if (!b) return;
   e.preventDefault();                                     // evita seguir o link e abrir/fechar o <details>
   const ch = b.dataset.chave;
@@ -535,6 +544,27 @@ $res.addEventListener('click', e => {
     case 'csv': exportaCsv(); break;
   }
 });
+
+/* ---------- modo claro / escuro ----------
+   Sem escolha salva, segue o navegador/sistema. Ao escolher o mesmo tema do sistema, a escolha é apagada
+   e a página volta a acompanhar o sistema. */
+const midiaEscuro = matchMedia('(prefers-color-scheme: dark)');
+const temaSistema = () => midiaEscuro.matches ? 'escuro' : 'claro';
+const temaAtual = () => document.documentElement.dataset.tema || temaSistema();
+function mostraBotaoTema() {
+  const escuro = temaAtual() === 'escuro';
+  $('#btnTema').textContent = escuro ? 'Modo claro' : 'Modo escuro';
+  $('#btnTema').title = document.documentElement.dataset.tema ? 'Tema escolhido por você' : 'Seguindo o tema do sistema';
+}
+$('#btnTema').addEventListener('click', () => {
+  const novo = temaAtual() === 'escuro' ? 'claro' : 'escuro';
+  const raiz = document.documentElement;
+  if (novo === temaSistema()) { delete raiz.dataset.tema; try { localStorage.removeItem('tema'); } catch { /* ignora */ } }
+  else { raiz.dataset.tema = novo; try { localStorage.setItem('tema', novo); } catch { /* ignora */ } }
+  mostraBotaoTema();
+});
+midiaEscuro.addEventListener('change', mostraBotaoTema);
+mostraBotaoTema();
 
 // versões antigas da página guardavam no navegador uma base carregada de arquivos; ela não é mais usada
 try { indexedDB.deleteDatabase('participacoes-cnpj'); } catch { /* ignora */ }

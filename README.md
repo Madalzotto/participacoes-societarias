@@ -14,7 +14,8 @@ empresa X, lista as empresas Y em que X aparece como sócia, em vários níveis.
    `scripts/atualizar.ps1`. Esse script guarda só os vínculos em que o sócio é pessoa jurídica,
    sem CPFs.
 3. O resultado é uma API estática publicada no GitHub Pages (branch `gh-pages`), junto com a página
-   (`index.html`, `app.js`, `estilo.css`), que faz as consultas.
+   (`index.html`, `app.js`, `tema.js`, `estilo.css`), que faz as consultas. O tema claro/escuro segue o
+   sistema, e a escolha feita no botão fica salva no navegador.
 
 Para forçar uma atualização: aba **Actions** → *Atualizar base da Receita* → **Run workflow**
 (marque "Reprocessar mesmo sem mês novo").
