@@ -3,224 +3,117 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Participações Societárias</title>
+<title>Consulta de Participações Societárias</title>
 <style>
-:root{
-  --bg:#f4f6f9; --card:#ffffff; --ink:#18202b; --muted:#5d6979; --line:#e1e6ed; --soft:#f7f9fc;
-  --accent:#1b5cf0; --accent-ink:#ffffff; --accent-soft:#e7eeff;
-  --ok:#11743a; --ok-soft:#e3f5ea; --warn:#8f5600; --warn-soft:#fff1d6; --bad:#b3261e; --bad-soft:#fde7e5;
-  --mono: "Cascadia Mono", Consolas, ui-monospace, monospace;
-  --radius:12px;
-}
-@media (prefers-color-scheme: dark){
-  :root{
-    --bg:#0e1116; --card:#161b22; --ink:#e6eaf0; --muted:#97a3b3; --line:#2a323d; --soft:#1b212a;
-    --accent:#6f98ff; --accent-ink:#0a1020; --accent-soft:#1c2742;
-    --ok:#62d08d; --ok-soft:#13301f; --warn:#f1b65a; --warn-soft:#352612; --bad:#ff8a80; --bad-soft:#3b1715;
-  }
-}
-*{box-sizing:border-box}
-html,body{margin:0}
-body{background:var(--bg);color:var(--ink);font:15px/1.5 "Segoe UI",system-ui,-apple-system,Roboto,Arial,sans-serif}
-main{max-width:1120px;margin:0 auto;padding:0 16px 48px}
-.topo{max-width:1120px;margin:0 auto;padding:28px 16px 18px}
-.topo h1{margin:0 0 4px;font-size:26px;letter-spacing:-.01em}
-.topo p{margin:0;color:var(--muted);max-width:760px}
-.card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin-bottom:16px}
-.card-h{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:14px}
-.card-h h2{margin:0;font-size:17px;display:flex;align-items:center;gap:10px}
-.num{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--accent-soft);color:var(--accent);font-size:13px;font-weight:700}
-.muted{color:var(--muted)}
-code{font-family:var(--mono);font-size:.9em;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:0 4px}
-a{color:var(--accent)}
-.status{font-size:13px;padding:5px 10px;border-radius:999px;background:var(--soft);border:1px solid var(--line);color:var(--muted)}
-.status.ok{background:var(--ok-soft);border-color:transparent;color:var(--ok)}
-.drop{border:1.5px dashed var(--line);border-radius:10px;padding:18px;background:var(--soft);transition:.15s}
-.drop.sobre{border-color:var(--accent);background:var(--accent-soft)}
-.drop p{margin:0 0 6px}
-.btn{font:inherit;font-weight:600;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:8px 16px;cursor:pointer}
-.btn:hover{filter:brightness(1.07)}
-.btn:disabled{opacity:.5;cursor:default}
-.btn.ghost{background:transparent;color:var(--ink);border-color:var(--line);font-weight:500}
-.btn.ghost:hover{border-color:var(--muted)}
-.btn.danger{color:var(--bad)}
-.btn.sm{padding:3px 10px;font-size:13px}
-.link{font:inherit;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
-.chk{display:inline-flex;align-items:center;gap:7px;font-size:14px;color:var(--muted);cursor:pointer;margin-top:6px}
-.linha-btns{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
-.prog{margin-top:14px}
-.bar{height:8px;border-radius:99px;background:var(--soft);border:1px solid var(--line);overflow:hidden}
-.bar>div{height:100%;width:0;background:var(--accent);transition:width .2s}
-.prog-l{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:8px;font-size:13px;color:var(--muted)}
-.aviso{margin-top:12px;padding:10px 14px;border-radius:8px;font-size:14px;background:var(--soft);border:1px solid var(--line)}
-.aviso.ok{background:var(--ok-soft);border-color:transparent}
-.aviso.erro{background:var(--bad-soft);border-color:transparent;color:var(--bad)}
-.aviso.warn{background:var(--warn-soft);border-color:transparent}
-details.local>summary{cursor:pointer;font-weight:600;margin-bottom:12px}
-details.local:not([open])>summary{margin-bottom:0;color:var(--muted);font-weight:500;font-size:14px}
-details.ajuda{margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
-details.ajuda summary{cursor:pointer;font-weight:600}
-details.ajuda ol{margin:10px 0 0;padding-left:22px}
-details.ajuda li{margin-bottom:6px}
-.busca{display:flex;gap:8px}
-.busca input{flex:1;min-width:0;font:inherit;font-size:16px;padding:10px 14px;border:1px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink)}
-.busca input:focus{outline:2px solid var(--accent-soft);border-color:var(--accent)}
-.opcoes{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;margin-top:12px}
-.seg{display:inline-flex;border:1px solid var(--line);border-radius:9px;padding:3px;background:var(--soft)}
-.seg label{cursor:pointer;position:relative}
-.seg input{position:absolute;opacity:0;pointer-events:none}
-.seg span{display:block;padding:6px 14px;border-radius:7px;font-size:14px;color:var(--muted)}
-.seg input:checked+span{background:var(--card);color:var(--ink);font-weight:600;box-shadow:0 1px 2px rgba(0,0,0,.12)}
-.seg input:focus-visible+span{outline:2px solid var(--accent)}
-.sel{font-size:14px;color:var(--muted);display:inline-flex;align-items:center;gap:6px}
-.sel select{font:inherit;padding:5px 8px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--ink)}
-.raiz{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap;align-items:flex-start}
-.raiz-txt{flex:1;min-width:0}
-.raiz .rotulo{font-size:12px;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
-.raiz .no-l1{font-size:20px;font-weight:700;margin:2px 0 4px}
-.raiz .no-l2{font-size:14px}
-.resumo{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 4px}
-.kpi{background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:8px 14px;min-width:150px}
-.kpi b{display:block;font-size:22px;line-height:1.2}
-.kpi span{font-size:13px;color:var(--muted)}
-.barra-res{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:16px 0 10px}
-.tabs{display:inline-flex;gap:4px}
-.tabs button{font:inherit;font-size:14px;background:none;border:0;border-bottom:2px solid transparent;padding:6px 10px;color:var(--muted);cursor:pointer}
-.tabs button.ativo{color:var(--ink);border-bottom-color:var(--accent);font-weight:600}
-.info-online{font-size:13px;color:var(--muted)}
-.pill{display:inline-block;font-size:12px;line-height:1.5;padding:0 8px;border-radius:99px;background:var(--soft);border:1px solid var(--line);color:var(--muted);white-space:nowrap;vertical-align:1px}
-.pill.ok{background:var(--ok-soft);color:var(--ok);border-color:transparent}
-.pill.bad{background:var(--bad-soft);color:var(--bad);border-color:transparent}
-.pill.warn{background:var(--warn-soft);color:var(--warn);border-color:transparent}
-.mono{font-family:var(--mono);font-size:13px}
-/* árvore */
-ul.arvore,ul.arvore ul{list-style:none;margin:0;padding:0}
-ul.arvore ul{margin-left:22px;border-left:1px solid var(--line);padding-left:10px}
-ul.arvore li{margin:4px 0}
-ul.arvore summary{list-style:none;cursor:pointer}
-ul.arvore summary::-webkit-details-marker{display:none}
-.no{display:flex;gap:10px;align-items:flex-start;padding:8px 10px;border:1px solid var(--line);border-radius:9px;background:var(--card)}
-.no:hover{border-color:var(--muted)}
-.seta{display:inline-block;width:16px;flex:none;color:var(--muted);font-size:12px;padding-top:3px;text-align:center}
-details[open]>summary .seta{transform:rotate(90deg)}
-.nv{flex:none;font-size:11px;font-weight:700;color:var(--accent);background:var(--accent-soft);border-radius:6px;padding:1px 6px;margin-top:2px}
-.no-txt{flex:1;min-width:0}
-.no-l1{font-weight:600;display:flex;gap:8px;flex-wrap:wrap;align-items:baseline}
-.no-l2{font-size:13px;color:var(--muted);overflow-wrap:anywhere}
-.no-l2 .pill{white-space:normal}
-.acoes{flex:none;display:flex;gap:6px}
-.sem-nome{font-weight:400;font-style:italic;color:var(--muted)}
-/* tabela */
-.tbl-wrap{overflow-x:auto;border:1px solid var(--line);border-radius:10px}
-table{border-collapse:collapse;width:100%;font-size:13.5px}
-th,td{padding:7px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}
-th{background:var(--soft);font-weight:600;position:sticky;top:0;white-space:nowrap}
-tr:last-child td{border-bottom:0}
-td.mono{white-space:nowrap}
-.cands{list-style:none;margin:0;padding:0}
-.cands li{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);flex-wrap:wrap}
-.cands li:last-child{border-bottom:0}
-.nota h3{margin:0 0 8px;font-size:15px}
-.nota ul{margin:0;padding-left:20px;color:var(--muted);font-size:14px}
-.nota li{margin-bottom:4px}
-.carregando{color:var(--muted);padding:6px 0}
-@media (max-width:640px){
-  .busca{flex-direction:column}
-  .no{flex-wrap:wrap}
-  .acoes{width:100%;padding-left:26px}
-  ul.arvore ul{margin-left:8px;padding-left:8px}
+body { font-family: Arial, Helvetica, sans-serif; font-size: 14px; line-height: 1.45; color: #000; background: #fff; max-width: 980px; margin: 0 auto; padding: 8px 16px 40px; }
+h1 { font-size: 22px; margin: 14px 0 6px; }
+h2 { font-size: 17px; margin: 22px 0 6px; }
+p { margin: 8px 0; }
+hr { border: 0; border-top: 1px solid #bbb; margin: 24px 0 12px; }
+fieldset { border: 1px solid #999; margin: 12px 0; padding: 6px 12px 10px; }
+legend { font-weight: bold; padding: 0 4px; }
+table.form td { padding: 4px 8px 4px 0; vertical-align: top; }
+table.form td:first-child { white-space: nowrap; padding-top: 6px; }
+#q { width: 380px; max-width: 100%; font: inherit; padding: 3px 4px; }
+table.dados { border-collapse: collapse; width: 100%; margin: 8px 0; }
+table.dados th, table.dados td { border: 1px solid #999; padding: 3px 6px; text-align: left; vertical-align: top; }
+table.dados th { background: #e6e6e6; }
+.rolagem { overflow-x: auto; }
+.cnpj { font-family: "Courier New", Courier, monospace; white-space: nowrap; }
+.cinza { color: #555; }
+.erro { color: #c00; }
+.ok { color: #060; }
+.warn { background: #ffffcc; border: 1px solid #c9c98a; padding: 6px 8px; }
+ul.arvore, ul.arvore ul { list-style: none; margin: 0; padding-left: 22px; }
+ul.arvore { padding-left: 4px; }
+ul.arvore li { margin: 3px 0; padding-left: 14px; }
+ul.arvore li.grupo { padding-left: 0; }
+ul.arvore summary { cursor: pointer; }
+ul.arvore a.nm { font-weight: bold; }
+#prog progress { width: 260px; vertical-align: middle; }
+ol li, ul.notas li { margin-bottom: 4px; }
+@media (max-width: 600px) {
+  table.form td { display: block; padding: 2px 0; }
+  #q { width: 100%; }
 }
 </style>
 </head>
 <body>
-<header class="topo">
-  <h1>Participações Societárias</h1>
-  <p>Descubra de quais empresas um CNPJ é sócio (e quem está acima dele), usando a base pública de sócios da Receita Federal.</p>
-</header>
 
-<main>
-  <!-- 1. BASE -->
-  <section class="card">
-    <div class="card-h">
-      <h2><span class="num">1</span> Base da Receita Federal</h2>
-      <div id="status" class="status">Verificando base…</div>
-    </div>
-    <div id="infoNuvem" class="aviso ok" style="margin:0 0 12px" hidden></div>
+<h1>Consulta de Participações Societárias</h1>
+<p>Informe o CNPJ ou parte do nome de uma empresa para ver de quais empresas ela é sócia, ou quais empresas são sócias dela.
+Fonte: Quadro de Sócios e Administradores (QSA) dos dados abertos do CNPJ, da Receita Federal.</p>
+<p id="status" class="cinza">Verificando a base de dados...</p>
 
-    <details id="boxLocal" class="local" open>
-    <summary id="boxLocalTit">Carregar os arquivos da Receita</summary>
-    <div id="drop" class="drop">
-      <input type="file" id="arqs" multiple hidden>
-      <p><strong>Arraste aqui</strong> os arquivos <code>Socios0.zip</code> … <code>Socios9.zip</code>
-        (e, se quiser os nomes sem internet, também <code>Empresas0.zip</code> … <code>Empresas9.zip</code>)
-        ou <button type="button" class="link" id="btnEscolher">escolha no computador</button>.</p>
-      <p class="muted">Não precisa descompactar. O processamento acontece só no seu computador. Nenhum arquivo é enviado.</p>
-      <label class="chk"><input type="checkbox" id="acumular"> Somar à base atual em vez de substituir (útil se baixou os arquivos em partes)</label>
-    </div>
+<form id="form">
+<fieldset>
+<legend>Pesquisa</legend>
+<table class="form">
+  <tr>
+    <td><label for="q">CNPJ ou nome:</label></td>
+    <td><input type="text" id="q" autocomplete="off" spellcheck="false" placeholder="00.000.000/0000-00"> <button type="submit" id="btnBuscar">Pesquisar</button></td>
+  </tr>
+  <tr>
+    <td>Mostrar:</td>
+    <td>
+      <label><input type="radio" name="dir" value="desce" checked> empresas das quais ela é sócia</label><br>
+      <label><input type="radio" name="dir" value="sobe"> empresas que são sócias dela</label>
+    </td>
+  </tr>
+  <tr>
+    <td><label for="niveis">Níveis:</label></td>
+    <td>
+      <select id="niveis">
+        <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option value="10">10</option>
+      </select>
+    </td>
+  </tr>
+  <tr>
+    <td></td>
+    <td><label><input type="checkbox" id="online" checked> consultar situação cadastral e município na BrasilAPI</label></td>
+  </tr>
+</table>
+</fieldset>
+</form>
 
-    <div id="prog" class="prog" hidden>
-      <div class="bar"><div id="barra"></div></div>
-      <div class="prog-l"><span id="progTxt"></span><button type="button" id="btnCancelar" class="btn ghost sm">Cancelar</button></div>
-    </div>
-    <div id="msgBase"></div>
+<div id="res"></div>
 
-    <details class="ajuda">
-      <summary>Como baixar os arquivos (passo a passo)</summary>
-      <ol>
-        <li>Abra os <a href="https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9" target="_blank" rel="noopener">Dados Abertos do CNPJ da Receita Federal</a>
-          (se o link mudar, procure "Dados Públicos CNPJ" em <a href="https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj" target="_blank" rel="noopener">dados.gov.br</a>).</li>
-        <li>Entre na pasta do mês mais recente (ex.: <code>2026-10</code>).</li>
-        <li>Baixe <strong>Socios0.zip a Socios9.zip</strong> (obrigatórios). Opcional: <strong>Empresas0.zip a Empresas9.zip</strong>, para ver a razão social mesmo sem internet.</li>
-        <li>Arraste todos os .zip para o quadro acima, de uma vez. Leva alguns minutos.</li>
-        <li>Pronto: o índice fica salvo neste navegador. Nas próximas vezes a página já abre com a base. Atualize uma vez por mês, se quiser dados recentes.</li>
-      </ol>
-      <p class="muted" style="margin:8px 0 0">Os arquivos de <em>Estabelecimentos</em> não são necessários.</p>
-    </details>
+<hr>
 
-    <div class="linha-btns">
-      <button type="button" id="btnExportar" class="btn ghost sm" disabled>Exportar índice (.tsv)</button>
-      <button type="button" id="btnImportar" class="btn ghost sm">Importar índice</button>
-      <input type="file" id="arqIndice" accept=".tsv,.txt" hidden>
-      <button type="button" id="btnApagar" class="btn ghost sm danger" disabled>Apagar base</button>
-    </div>
-    </details>
-  </section>
+<details id="boxLocal">
+<summary id="boxLocalTit">Usar arquivos da Receita baixados no computador</summary>
+<p>Selecione os arquivos <span class="cnpj">Socios0.zip</span> a <span class="cnpj">Socios9.zip</span> e, se quiser os nomes das empresas sem internet,
+<span class="cnpj">Empresas0.zip</span> a <span class="cnpj">Empresas9.zip</span>. Não é preciso descompactar. Os arquivos são lidos neste computador e não são enviados para lugar nenhum.</p>
+<p><input type="file" id="arqs" multiple> <label><input type="checkbox" id="acumular"> somar à base atual em vez de substituir</label></p>
+<p id="prog" hidden><progress id="barra" max="100" value="0"></progress> <span id="progTxt"></span> <button type="button" id="btnCancelar">Cancelar</button></p>
+<div id="msgBase"></div>
+<p>
+  <button type="button" id="btnExportar" disabled>Exportar índice</button>
+  <button type="button" id="btnImportar">Importar índice</button>
+  <input type="file" id="arqIndice" accept=".tsv,.txt" hidden>
+  <button type="button" id="btnApagar" disabled>Apagar base local</button>
+</p>
+<p>Como obter os arquivos:</p>
+<ol>
+  <li>Abra os <a href="https://arquivos.receitafederal.gov.br/index.php/s/YggdBLfdninEJX9" target="_blank" rel="noopener">dados abertos do CNPJ da Receita Federal</a>
+    (se o endereço mudar, procure "Dados Públicos CNPJ" em <a href="https://dados.gov.br/dados/conjuntos-dados/cadastro-nacional-da-pessoa-juridica---cnpj" target="_blank" rel="noopener">dados.gov.br</a>).</li>
+  <li>Entre na pasta do mês mais recente (por exemplo, 2026-10).</li>
+  <li>Baixe Socios0.zip a Socios9.zip. Os arquivos Empresas0.zip a Empresas9.zip são opcionais. Os de Estabelecimentos não são usados.</li>
+  <li>Selecione todos os arquivos no campo acima, de uma vez. O processamento leva alguns minutos e o resultado fica salvo neste navegador.</li>
+</ol>
+</details>
 
-  <!-- 2. PESQUISA -->
-  <section class="card">
-    <div class="card-h"><h2><span class="num">2</span> Pesquisar</h2></div>
-    <div class="busca">
-      <input id="q" placeholder="CNPJ (00.000.000/0000-00) ou parte do nome da empresa" autocomplete="off" spellcheck="false">
-      <button type="button" id="btnBuscar" class="btn">Pesquisar</button>
-    </div>
-    <div class="opcoes">
-      <div class="seg" role="radiogroup" aria-label="Direção da pesquisa">
-        <label><input type="radio" name="dir" value="desce" checked><span>Empresas que ela possui</span></label>
-        <label><input type="radio" name="dir" value="sobe"><span>Quem é dono dela</span></label>
-      </div>
-      <label class="sel">Níveis
-        <select id="niveis">
-          <option>1</option><option>2</option><option selected>3</option><option>4</option><option>5</option><option>6</option><option value="10">10</option>
-        </select>
-      </label>
-      <label class="chk" style="margin-top:0"><input type="checkbox" id="online" checked> Completar com dados online (razão social, situação, cidade)</label>
-    </div>
-  </section>
-
-  <section id="res"></section>
-
-  <section class="card nota">
-    <h3>O que esta pesquisa mostra (e o que não mostra)</h3>
-    <ul>
-      <li>Mostra as empresas em cujo <strong>Quadro de Sócios e Administradores (QSA)</strong> da Receita o CNPJ pesquisado aparece como sócio pessoa jurídica. A comparação é feita pela raiz do CNPJ (8 primeiros caracteres), então matriz e filiais contam como a mesma empresa.</li>
-      <li>A Receita <strong>não publica o percentual</strong> de participação de cada sócio.</li>
-      <li>Em <strong>Sociedades Anônimas</strong> o QSA traz diretores e conselheiros, não acionistas. Participações em S.A. normalmente não aparecem.</li>
-      <li>Sócios estrangeiros sem CNPJ aparecem pelo nome, marcados como "Exterior".</li>
-      <li>A Receita publica os dados uma vez por mês. A base na nuvem é atualizada sozinha pelo GitHub quando sai um mês novo. Os dados online (situação, cidade) vêm da <a href="https://brasilapi.com.br" target="_blank" rel="noopener">BrasilAPI</a> ou da <a href="https://minhareceita.org" target="_blank" rel="noopener">Minha Receita</a>, que só recebem o CNPJ consultado.</li>
-      <li>Sem nenhuma base disponível, a opção <em>Quem é dono dela</em> ainda funciona, consultando o QSA online, nível a nível.</li>
-    </ul>
-  </section>
-</main>
+<h2>Observações</h2>
+<ul class="notas">
+  <li>São listadas as empresas em cujo QSA o CNPJ pesquisado aparece como sócio pessoa jurídica. A comparação usa a raiz do CNPJ (8 primeiros caracteres), então matriz e filiais contam como a mesma empresa.</li>
+  <li>A Receita não publica o percentual de participação de cada sócio.</li>
+  <li>Em sociedades anônimas o QSA traz diretores e conselheiros, não acionistas. Participações em S.A. normalmente não aparecem.</li>
+  <li>Sócios estrangeiros sem CNPJ aparecem pelo nome, marcados como "exterior".</li>
+  <li>A Receita publica os dados uma vez por mês, e a base desta página é atualizada automaticamente quando sai um mês novo.
+    Situação cadastral e município vêm da <a href="https://brasilapi.com.br" target="_blank" rel="noopener">BrasilAPI</a> ou da <a href="https://minhareceita.org" target="_blank" rel="noopener">Minha Receita</a>, que recebem apenas o CNPJ consultado.</li>
+  <li>Sem acesso à base, a opção "empresas que são sócias dela" ainda funciona, consultando o QSA pela internet, nível a nível.</li>
+</ul>
+<p class="cinza">Código-fonte: <a href="https://github.com/Madalzotto/participacoes-societarias">github.com/Madalzotto/participacoes-societarias</a></p>
 
 <script>
 'use strict';
@@ -437,7 +330,7 @@ async function abreBaseSalva() {
   try {
     const v = await idbGet('base');
     if (!v) return;
-    $('#status').textContent = 'Abrindo base salva…';
+    $('#status').textContent = 'Abrindo a base salva neste navegador...';
     const txt = v instanceof Blob ? await v.text() : Array.isArray(v) ? v.join('') : String(v);
     desserializa(txt);
   } catch (e) { console.warn('Sem base salva:', e); }
@@ -609,7 +502,7 @@ function linhaEmpresa(buf, s, e, precisa) {
 }
 
 /* ---------- processamento ---------- */
-function msgBase(tipo, html) { $('#msgBase').innerHTML = html ? `<div class="aviso ${tipo}">${html}</div>` : ''; }
+function msgBase(tipo, html) { $('#msgBase').innerHTML = html ? `<p class="${tipo}">${html}</p>` : ''; }
 function tempo(ms) { const s = Math.round(ms / 1000); return `${String(Math.floor(s / 60)).padStart(2, '0')}:${String(s % 60).padStart(2, '0')}`; }
 
 async function processar(lista) {
@@ -622,7 +515,7 @@ async function processar(lista) {
     for (const src of srcs) {
       let t = tipoPorNome(src.nome) || tipoPorNome(src.arquivo);
       if (!t) t = await tipoPorConteudo(src);
-      const rot = src.nome === src.arquivo ? src.arquivo : `${src.arquivo} › ${src.nome}`;
+      const rot = src.nome === src.arquivo ? src.arquivo : `${src.arquivo} (${src.nome})`;
       if (t === 'S') S.push(src); else if (t === 'E') E.push(src); else ign.push(esc(rot) + (t === 'X' ? ' (Estabelecimentos: não é necessário)' : ''));
     }
   }
@@ -647,11 +540,11 @@ async function processar(lista) {
   const onBytes = n => { lidos += n; };
   const tick = () => {
     const pct = Math.min(100, lidos / total * 100);
-    $('#barra').style.width = pct.toFixed(1) + '%';
+    $('#barra').value = pct;
     const dec = performance.now() - t0;
     const resta = pct > 1 ? dec * (100 - pct) / pct : 0;
-    $('#progTxt').textContent = `${atual} · ${pct.toFixed(0)}% · ${fmtN(cont.linhas)} linhas · ${fmtN(cont.vinculos)} vínculos entre empresas`
-      + (cont.empresas ? ` · ${fmtN(cont.empresas)} nomes` : '') + ` · ${tempo(dec)}` + (resta ? ` (faltam ~${tempo(resta)})` : '');
+    $('#progTxt').textContent = `${atual}: ${pct.toFixed(0)}% (${fmtN(cont.linhas)} linhas, ${fmtN(cont.vinculos)} vínculos entre empresas`
+      + (cont.empresas ? `, ${fmtN(cont.empresas)} nomes` : '') + `, ${tempo(dec)}` + (resta ? `, faltam cerca de ${tempo(resta)}` : '') + ')';
   };
   try {
     for (const src of S) { atual = `Lendo ${src.arquivo}`; tick(); await lerLinhas(src, linhaSocio, onBytes, tick); }
@@ -677,7 +570,7 @@ async function processar(lista) {
     arquivosEmpresas: somar(metaAnt.arquivosEmpresas, nomesE),
     dataArquivos: Math.max(metaAnt.dataArquivos || 0, ...mods, 0) || null
   };
-  $('#barra').style.width = '100%';
+  $('#barra').value = 100;
   atual = 'Salvando no navegador'; tick(); await cedeVez();
   const salvo = await salvaNoNavegador();
   travaUI(false); $('#prog').hidden = true;
@@ -691,8 +584,7 @@ async function processar(lista) {
 }
 
 function travaUI(sim) {
-  for (const id of ['btnEscolher', 'btnExportar', 'btnImportar', 'btnApagar', 'acumular']) $('#' + id).disabled = sim;
-  $('#drop').style.pointerEvents = sim ? 'none' : '';
+  for (const id of ['arqs', 'btnExportar', 'btnImportar', 'btnApagar', 'acumular']) $('#' + id).disabled = sim;
   if (!sim) atualizaStatus();
 }
 
@@ -701,27 +593,21 @@ function atualizaStatus() {
   const tem = temBase();
   $('#btnExportar').disabled = !tem; $('#btnApagar').disabled = !tem;
   const nm = Nuvem.meta;
-  const info = $('#infoNuvem');
-  info.hidden = !nm;
-  if (nm) {
-    info.innerHTML = `<strong>Base na nuvem:</strong> dados da Receita de ${esc(mesExtenso(nm.mes))}, ${fmtN(nm.vinculos)} vínculos entre ${fmtN(nm.empresas)} empresas.
-      Ela é atualizada sozinha todo mês. Não precisa baixar nada.`
-      + (tem ? '<br><span class="muted">Agora as pesquisas usam os arquivos carregados abaixo. Para voltar à nuvem, clique em "Apagar base".</span>' : '');
-    $('#boxLocalTit').textContent = 'Usar arquivos próprios em vez da nuvem (opcional)';
+  if (tem) {
+    const m = DB.meta || {};
+    const partes = [`${fmtN(DB.rel.emp.length)} vínculos entre empresas`];
+    if (DB.empresas.size) partes.push(`${fmtN(DB.empresas.size)} razões sociais`);
+    if (m.dataArquivos) partes.push(`arquivos de ${new Date(m.dataArquivos).toLocaleDateString('pt-BR')}`);
+    el.textContent = 'Base de dados: arquivos carregados neste computador (' + partes.join(', ') + ').'
+      + (nm ? ' Para voltar a usar a base atualizada automaticamente, apague a base local no fim da página.' : '');
+    el.title = m.arquivosSocios ? 'Sócios: ' + m.arquivosSocios.join(', ') + (m.arquivosEmpresas?.length ? '\nEmpresas: ' + m.arquivosEmpresas.join(', ') : '') : '';
+  } else if (nm) {
+    el.textContent = `Base de dados: Receita Federal, ${mesExtenso(nm.mes)} (${fmtN(nm.vinculos)} vínculos entre ${fmtN(nm.empresas)} empresas), atualizada automaticamente todo mês.`;
+    el.title = 'Gerada em ' + new Date(nm.geradoEm).toLocaleString('pt-BR');
+  } else {
+    el.textContent = 'Base de dados indisponível (sem internet ou fora do ar). Só a consulta de empresas sócias funciona, pelo QSA na internet. Também é possível usar os arquivos da Receita no fim da página.';
+    el.title = '';
   }
-  if (!tem) {
-    el.className = nm ? 'status ok' : 'status';
-    el.textContent = nm ? `Nuvem: ${mesExtenso(nm.mes)}` : 'Nenhuma base carregada';
-    el.title = nm ? 'Gerada em ' + new Date(nm.geradoEm).toLocaleString('pt-BR') : '';
-    return;
-  }
-  const m = DB.meta || {};
-  const partes = [`${fmtN(DB.rel.emp.length)} vínculos`];
-  if (DB.empresas.size) partes.push(`${fmtN(DB.empresas.size)} razões sociais`);
-  if (m.dataArquivos) partes.push(`arquivos de ${new Date(m.dataArquivos).toLocaleDateString('pt-BR')}`);
-  el.className = 'status ok';
-  el.textContent = 'Base carregada: ' + partes.join(' · ');
-  el.title = m.arquivosSocios ? 'Sócios: ' + m.arquivosSocios.join(', ') + (m.arquivosEmpresas?.length ? '\nEmpresas: ' + m.arquivosEmpresas.join(', ') : '') : '';
 }
 
 /* ================= Dados online (BrasilAPI / Minha Receita) ================= */
@@ -772,8 +658,8 @@ function naturezaDe(ch) {
 function situacaoHtml(ch) {
   const o = onlineDados.get(ch); if (!o) return '';
   const s = String(o.descricao_situacao_cadastral || '').toUpperCase(); if (!s) return '';
-  const cls = s === 'ATIVA' ? 'ok' : s === 'BAIXADA' || s === 'NULA' ? 'bad' : 'warn';
-  return `<span class="pill ${cls}">${esc(s.charAt(0) + s.slice(1).toLowerCase())}</span>`;
+  const txt = esc(s.charAt(0) + s.slice(1).toLowerCase());
+  return s === 'ATIVA' ? txt : `<span class="erro">${txt}</span>`;
 }
 function localDe(ch) { const o = onlineDados.get(ch); if (!o || !o.municipio) return ''; return `${o.municipio}${o.uf ? '/' + o.uf : ''}`; }
 
@@ -956,16 +842,16 @@ function interpreta(txt) {
 async function pesquisar() {
   const txt = $('#q').value.trim(); if (!txt) { $('#q').focus(); return; }
   const r = interpreta(txt);
-  if (r.erro) { $res.innerHTML = `<div class="card"><div class="aviso erro" style="margin:0">${esc(r.erro)}</div></div>`; return; }
+  if (r.erro) { $res.innerHTML = `<p class="erro">${esc(r.erro)}</p>`; return; }
   if (r.chave) return executa(r.chave, direcao());
   const f = fonte();
   if (!f) {
-    $res.innerHTML = `<div class="card"><div class="aviso warn" style="margin:0">A pesquisa por nome precisa da base da Receita (passo 1). Sem a base, informe o CNPJ.</div></div>`;
+    $res.innerHTML = `<p class="warn">A pesquisa por nome precisa da base de dados, que não está disponível agora. Pesquise pelo CNPJ.</p>`;
     return;
   }
   if (f === 'local') return mostraCandidatos(buscaPorNome(txt), txt);
   const token = ++buscaAtual;
-  $res.innerHTML = `<div class="card"><div class="carregando">Procurando “${esc(txt)}”…</div></div>`;
+  $res.innerHTML = `<p>Pesquisando "${esc(txt)}"...</p>`;
   try {
     const r2 = await buscaPorNomeNuvem(txt);
     if (token === buscaAtual) mostraCandidatos(r2.lista, txt, r2.aviso);
@@ -974,7 +860,7 @@ async function pesquisar() {
 
 function erroNuvem(e) {
   console.warn(e);
-  $res.innerHTML = `<div class="card"><div class="aviso erro" style="margin:0">Não foi possível consultar a base na nuvem (${esc(e.message)}). Verifique a conexão com a internet e tente de novo.</div></div>`;
+  $res.innerHTML = `<p class="erro">Não foi possível consultar a base de dados (${esc(e.message)}). Verifique a conexão com a internet e tente de novo.</p>`;
 }
 
 function buscaPorNome(q) {
@@ -998,21 +884,29 @@ function buscaPorNome(q) {
   return lst.sort((a, b) => (b.desce - a.desce) || a.nome.localeCompare(b.nome, 'pt-BR')).slice(0, 100);
 }
 
+const plural = (n, um, varios) => `${fmtN(n)} ${n === 1 ? um : varios}`;
+const linkIr = (ch, dir, texto, titulo) =>
+  `<a href="#" data-acao="ir" data-chave="${esc(ch)}" data-dir="${dir}"${titulo ? ` title="${esc(titulo)}"` : ''}>${texto}</a>`;
+
 function mostraCandidatos(lst, q, aviso) {
-  const avisoHtml = aviso ? `<div class="aviso warn" style="margin:0 0 12px">${esc(aviso)}</div>` : '';
+  const avisoHtml = aviso ? `<p class="warn">${esc(aviso)}</p>` : '';
   if (!lst.length) {
     const comNomes = fonte() === 'nuvem' || DB.empresas.size;
-    $res.innerHTML = `<div class="card">${avisoHtml}<div class="aviso" style="margin:0">Nenhuma empresa com “${esc(q)}” no nome foi encontrada entre as empresas que têm ou são sócias PJ.
-      ${comNomes ? '<br>Confira a grafia ou pesquise pelo CNPJ.' : '<br>Dica: sem os arquivos de Empresas, a busca por nome só encontra empresas que são sócias de outras. Tente pelo CNPJ.'}</div></div>`;
+    $res.innerHTML = `${avisoHtml}<p>Nenhuma empresa com "${esc(q)}" no nome foi encontrada entre as empresas que têm sócias ou são sócias de outras.
+      ${comNomes ? 'Confira a grafia ou pesquise pelo CNPJ.' : 'Sem os arquivos de Empresas, a busca por nome só encontra empresas que são sócias de outras. Tente pelo CNPJ.'}</p>`;
     return;
   }
-  $res.innerHTML = `<div class="card">${avisoHtml}<div class="card-h"><h2>${lst.length === 100 ? 'Mais de 100' : lst.length} resultado(s) para “${esc(q)}”</h2><span class="muted" style="font-size:13px">Escolha a empresa</span></div>
-    <ul class="cands">${lst.map(c => `<li>
-      <div><div style="font-weight:600">${esc(c.nome)}</div><div class="mono muted">${ehExterior(c.chave) ? 'Exterior (sem CNPJ)' : fmtCnpj(matriz(c.chave))}</div></div>
-      <div class="acoes">
-        <button type="button" class="btn ghost sm" data-acao="ir" data-chave="${esc(c.chave)}" data-dir="desce" ${c.desce ? '' : 'disabled'}>É sócia de ${c.desce} empresa(s)</button>
-        <button type="button" class="btn ghost sm" data-acao="ir" data-chave="${esc(c.chave)}" data-dir="sobe" ${c.sobe ? '' : 'disabled'}>Tem ${c.sobe} sócia(s) PJ</button>
-      </div></li>`).join('')}</ul></div>`;
+  const linhas = lst.map(c => `<tr>
+    <td>${esc(c.nome)}</td>
+    <td class="cnpj">${ehExterior(c.chave) ? 'exterior' : fmtCnpj(matriz(c.chave))}</td>
+    <td>${c.desce ? linkIr(c.chave, 'desce', plural(c.desce, 'empresa', 'empresas')) : '-'}</td>
+    <td>${c.sobe ? linkIr(c.chave, 'sobe', plural(c.sobe, 'empresa', 'empresas')) : '-'}</td>
+  </tr>`).join('');
+  $res.innerHTML = `<h2>Resultados para "${esc(q)}"</h2>${avisoHtml}
+    <p>${lst.length === 100 ? 'Mostrando os 100 primeiros resultados.' : plural(lst.length, 'empresa encontrada.', 'empresas encontradas.')} Clique no número para ver a árvore.</p>
+    <div class="rolagem"><table class="dados">
+      <tr><th>Razão social</th><th>CNPJ</th><th>É sócia de</th><th>Sócias PJ</th></tr>${linhas}
+    </table></div>`;
 }
 
 async function executa(chave, dir) {
@@ -1022,13 +916,13 @@ async function executa(chave, dir) {
   const f = fonte();
   const semBase = !f;
   if (dir === 'desce' && semBase) {
-    $res.innerHTML = `<div class="card"><div class="aviso warn" style="margin:0">Para descobrir <strong>de quais empresas</strong> um CNPJ é sócio é preciso uma base da Receita: a da nuvem (não foi possível acessá-la agora) ou os arquivos carregados no passo 1. Nenhum serviço público gratuito oferece essa busca reversa.
-      <br>Sem a base, dá para usar <em>Quem é dono dela</em>, que consulta o QSA online.</div></div>`;
+    $res.innerHTML = `<p class="warn">Para listar as empresas das quais um CNPJ é sócio é preciso a base de dados, que não está disponível agora
+      (sem internet ou fora do ar). A opção "empresas que são sócias dela" funciona sem a base, consultando o QSA pela internet.</p>`;
     return;
   }
   document.querySelector(`input[name=dir][value=${dir}]`).checked = true;
   const viz = dir === 'desce' ? (f === 'local' ? vizDesce : vizDesceNuvem) : (f === 'local' ? vizSobe : f === 'nuvem' ? vizSobeNuvem : vizSobeOnline);
-  $res.innerHTML = `<div class="card"><div class="carregando" id="carregando">Montando a árvore…</div></div>`;
+  $res.innerHTML = `<p id="carregando">Pesquisando...</p>`;
   if (semBase || usarOnline) consultaOnline(chave);
   let arv;
   try {
@@ -1036,7 +930,7 @@ async function executa(chave, dir) {
     if (semBase) await consultaOnline(chave);
     arv = await montaArvore(chave, viz, prof, n => {
       if (token !== buscaAtual) return;
-      const c = $('#carregando'); if (c) c.textContent = viz.online ? `Consultando o QSA online… ${n} empresa(s) encontradas` : `Montando a árvore… ${n} empresa(s)`;
+      const c = $('#carregando'); if (c) c.textContent = viz.online ? `Consultando o QSA pela internet... ${n} empresa(s) encontrada(s)` : `Pesquisando... ${n} empresa(s)`;
     });
   } catch (e) { if (token === buscaAtual) erroNuvem(e); return; }
   if (token !== buscaAtual) return;
@@ -1045,96 +939,92 @@ async function executa(chave, dir) {
   if (usarOnline || semBase) enriquece(arv, token);
 }
 
-function linhaNo(ch, extra, fim) {
+// nome (link para pesquisar a partir dele), CNPJ e dados que chegam depois (natureza, situação, município)
+function linhaNo(ch, dir, extra) {
   const ex = ehExterior(ch);
   const nm = nomeDe(ch);
-  return `<div class="no-l1"><span class="nm">${nm ? esc(nm) : '<span class="sem-nome">nome não disponível</span>'}</span><span class="sit">${situacaoHtml(ch)}</span>${ex ? '<span class="pill">Exterior</span>' : ''}</div>
-    <div class="no-l2"><span class="mono">${ex ? 'sem CNPJ' : fmtCnpj(matriz(ch))}</span>${extra || ''}<span class="nat">${naturezaDe(ch) ? ' · ' + esc(naturezaDe(ch)) : ''}</span><span class="loc">${localDe(ch) ? ' · ' + esc(localDe(ch)) : ''}</span>${fim || ''}</div>`;
+  const nat = naturezaDe(ch), sit = situacaoHtml(ch), loc = localDe(ch);
+  return `<a href="#" class="nm" data-acao="ir" data-chave="${esc(ch)}" data-dir="${dir}" title="Pesquisar a partir desta empresa">${nm ? esc(nm) : '(nome não disponível)'}</a>`
+    + ` | <span class="cnpj">${ex ? 'exterior, sem CNPJ' : fmtCnpj(matriz(ch))}</span>${extra || ''}`
+    + `<span class="nat">${nat ? ' | ' + esc(nat) : ''}</span><span class="sit">${sit ? ' | ' + sit : ''}</span><span class="loc">${loc ? ' | ' + esc(loc) : ''}</span>`;
 }
 
 function htmlNo(no, dir) {
   const quals = (no.quals || []).map(qualNome).filter(Boolean).join(' / ');
-  let extra = (quals ? ' · ' + esc(quals) : '') + (fmtData(no.data) ? ' · desde ' + fmtData(no.data) : '');
-  const flag = no.ciclo ? ' <span class="pill warn">participação cruzada: já aparece acima</span>'
-    : no.repetido ? ' <span class="pill">já listada em outro ramo</span>'
-    : no.temMais ? ` <span class="pill">tem mais ${dir === 'desce' ? 'participações' : 'sócias PJ'}: aumente os níveis</span>` : '';
-  const acoes = `<div class="acoes">${ehExterior(no.chave) ? '' : `<button type="button" class="btn ghost sm" data-acao="copiar" data-chave="${esc(no.chave)}" title="Copiar CNPJ">Copiar</button>`}
-    <button type="button" class="btn ghost sm" data-acao="ir" data-chave="${esc(no.chave)}" data-dir="${dir}" title="Pesquisar a partir desta empresa">Pesquisar</button></div>`;
-  const temFilhos = no.filhos.length > 0;
-  const cab = `<div class="no" data-no="${esc(no.chave)}"><span class="seta">${temFilhos ? '▶' : ''}</span><span class="nv">N${no.nivel}</span>
-    <div class="no-txt">${linhaNo(no.chave, extra, flag)}</div>${acoes}</div>`;
-  if (!temFilhos) return `<li>${cab}</li>`;
-  return `<li><details ${no.nivel < 3 ? 'open' : ''}><summary>${cab}</summary><ul>${no.filhos.map(f => htmlNo(f, dir)).join('')}</ul></details></li>`;
+  const data = fmtData(no.data);
+  const desc = (quals || 'Sócio') + (data ? ' desde ' + data : '');
+  const obs = no.ciclo ? ' <i>(participação cruzada: esta empresa já aparece acima)</i>'
+    : no.repetido ? ' <i>(já listada em outro ponto da árvore)</i>'
+    : no.temMais ? ` <i>(tem mais ${dir === 'desce' ? 'participações' : 'sócias'}; aumente o número de níveis)</i>` : '';
+  const linha = `<span data-no="${esc(no.chave)}">${linhaNo(no.chave, dir, ' | ' + esc(desc))}</span>${obs}`;
+  if (!no.filhos.length) return `<li>${linha}</li>`;
+  return `<li class="grupo"><details${no.nivel < 3 ? ' open' : ''}><summary>${linha}</summary><ul>${no.filhos.map(f => htmlNo(f, dir)).join('')}</ul></details></li>`;
 }
 
 function renderResultado(arv, dir, prof, semBase) {
   const diretos = arv.filhos.length;
   const desce = dir === 'desce';
-  const titulo = desce ? 'Empresas de que ela é sócia' : 'Sócias pessoa jurídica (para cima)';
+  const raiz = arv.raiz, ex = ehExterior(raiz);
+  const nat = naturezaDe(raiz), sit = situacaoHtml(raiz), loc = localDe(raiz);
+  const cab = `<div data-no="${esc(raiz)}">
+      <h2 class="nm">${esc(nomeDe(raiz) || '(nome não disponível)')}</h2>
+      <p>CNPJ: <span class="cnpj">${ex ? 'exterior, sem CNPJ' : fmtCnpj(matriz(raiz))}</span><span class="nat">${nat ? ' | ' + esc(nat) : ''}</span><span class="sit">${sit ? ' | ' + sit : ''}</span><span class="loc">${loc ? ' | ' + esc(loc) : ''}</span></p>
+    </div>`;
   let corpo;
   if (!diretos) {
     corpo = desce
-      ? `<div class="aviso">Nenhuma empresa tem este CNPJ como sócio na base carregada.<br><span class="muted">Possíveis motivos: a empresa não tem participações; as participações são em S.A. (a Receita não lista acionistas); ${fonte() === 'local' ? ' ou a base está desatualizada ou incompleta (confira se carregou os 10 arquivos de Sócios)' : ' ou a participação é mais recente que a última publicação da Receita'}.</span></div>`
-      : `<div class="aviso">Nenhum sócio pessoa jurídica encontrado. Os sócios desta empresa são pessoas físicas, ou ela não tem quadro societário na Receita (ex.: empresário individual, S.A. que só lista diretores).</div>`;
+      ? `<p>Nenhuma empresa tem este CNPJ como sócio na base de dados.</p>
+         <p class="cinza">Possíveis motivos: a empresa não tem participações; as participações são em sociedades anônimas (a Receita não lista acionistas);
+         ${fonte() === 'local' ? 'ou a base local está desatualizada ou incompleta (confira se foram carregados os 10 arquivos de Sócios)' : 'ou a participação é mais recente que a última publicação da Receita'}.</p>`
+      : `<p>Nenhum sócio pessoa jurídica encontrado. Os sócios desta empresa são pessoas físicas, ou ela não tem quadro societário na Receita (por exemplo, empresário individual ou S.A. que só lista diretores).</p>`;
   } else {
     corpo = `
-      <div class="barra-res">
-        <div class="tabs"><button type="button" class="ativo" data-tab="arvore">Árvore</button><button type="button" data-tab="tabela">Tabela</button></div>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-          <span class="info-online" id="infoOnline"></span>
-          <button type="button" class="btn ghost sm" data-acao="expandir">Expandir tudo</button>
-          <button type="button" class="btn ghost sm" data-acao="recolher">Recolher</button>
-          <button type="button" class="btn ghost sm" data-acao="csv">Exportar CSV</button>
-        </div>
-      </div>
+      <p>${desce ? 'Participações diretas' : 'Sócias pessoa jurídica diretas'}: <b>${fmtN(diretos)}</b>.
+         Total de empresas na árvore: <b>${fmtN(arv.distintas)}</b> (até ${plural(prof, 'nível', 'níveis')}).</p>
+      <p>Exibir como:
+        <label><input type="radio" name="vis" value="arvore" checked> lista</label>
+        <label><input type="radio" name="vis" value="tabela"> tabela</label>
+        &nbsp;|&nbsp; <a href="#" data-acao="expandir">expandir tudo</a>
+        &nbsp;|&nbsp; <a href="#" data-acao="recolher">recolher</a>
+        &nbsp;|&nbsp; <a href="#" data-acao="csv">exportar CSV</a>
+        <span id="infoOnline" class="cinza"></span></p>
       <div id="vArvore"><ul class="arvore">${arv.filhos.map(f => htmlNo(f, dir)).join('')}</ul></div>
       <div id="vTabela" hidden>${tabelaHtml(arv, dir)}</div>
-      ${arv.cortado ? `<div class="aviso warn">A árvore passou de ${fmtN(LIMITE_NOS)} itens e foi cortada. Reduza os níveis ou pesquise a partir de um ramo.</div>` : ''}`;
+      ${arv.cortado ? `<p class="warn">A árvore passou de ${fmtN(LIMITE_NOS)} empresas e foi cortada. Reduza o número de níveis ou pesquise a partir de um ramo.</p>` : ''}`;
   }
-  const niveis = arv.linhas.reduce((m, l) => Math.max(m, l.nivel), 0);
-  $res.innerHTML = `<div class="card">
-    <div class="raiz" data-no="${esc(arv.raiz)}">
-      <div class="raiz-txt"><div class="rotulo">Empresa pesquisada</div>${linhaNo(arv.raiz, '')}</div>
-      ${ehExterior(arv.raiz) ? '' : `<button type="button" class="btn ghost sm" data-acao="copiar" data-chave="${esc(arv.raiz)}">Copiar CNPJ</button>`}
-    </div>
-    ${semBase ? '<div class="aviso warn">Sem base carregada: as sócias foram buscadas no QSA online, uma a uma.</div>' : ''}
-    <div class="resumo">
-      <div class="kpi"><b>${fmtN(diretos)}</b><span>${desce ? 'participações diretas' : 'sócias PJ diretas'}</span></div>
-      ${diretos ? `<div class="kpi"><b>${fmtN(arv.distintas)}</b><span>empresas na cadeia</span></div>
-      <div class="kpi"><b>${niveis}</b><span>nível(is) exibido(s) de ${prof}</span></div>` : ''}
-    </div>
-    <h3 style="margin:18px 0 0;font-size:15px">${titulo}</h3>
-    ${corpo}
-  </div>`;
+  $res.innerHTML = cab
+    + (semBase ? '<p class="warn">Base de dados indisponível: as sócias foram buscadas no QSA pela internet, uma a uma.</p>' : '')
+    + `<p><b>${desce ? 'Empresas das quais é sócia' : 'Empresas que são sócias dela'}</b></p>`
+    + corpo;
 }
 
 function tabelaHtml(arv, dir) {
   const desce = dir === 'desce';
   const rows = arv.linhas.map(l => `<tr data-no="${esc(l.chave)}">
     <td>${l.nivel}</td>
-    <td class="mono">${ehExterior(l.chave) ? 'Exterior' : fmtCnpj(matriz(l.chave))}</td>
-    <td><span class="nm">${esc(nomeDe(l.chave))}</span>${l.ciclo ? ' <span class="pill warn">cruzada</span>' : l.repetido ? ' <span class="pill">repetida</span>' : ''}</td>
-    <td><span class="ref" data-no="${esc(l.pai)}"><span class="nm">${esc(nomeDe(l.pai))}</span></span><div class="mono muted">${ehExterior(l.pai) ? '' : fmtCnpj(matriz(l.pai))}</div></td>
+    <td class="cnpj">${ehExterior(l.chave) ? 'exterior' : fmtCnpj(matriz(l.chave))}</td>
+    <td>${linkIr(l.chave, dir, `<span class="nm">${esc(nomeDe(l.chave) || '(nome não disponível)')}</span>`, 'Pesquisar a partir desta empresa')}${l.ciclo ? ' <i>(cruzada)</i>' : l.repetido ? ' <i>(repetida)</i>' : ''}</td>
+    <td><span data-no="${esc(l.pai)}"><span class="nm">${esc(nomeDe(l.pai))}</span></span><br><span class="cnpj cinza">${ehExterior(l.pai) ? '' : fmtCnpj(matriz(l.pai))}</span></td>
     <td>${esc((l.quals || []).map(qualNome).join(' / '))}</td>
-    <td class="mono">${fmtData(l.data)}</td>
+    <td>${fmtData(l.data)}</td>
     <td><span class="sit">${situacaoHtml(l.chave)}</span></td>
     <td><span class="loc">${esc(localDe(l.chave))}</span></td>
   </tr>`).join('');
-  return `<div class="tbl-wrap"><table><thead><tr><th>Nível</th><th>CNPJ</th><th>Razão social</th><th>${desce ? 'Sócia direta' : 'Controla diretamente'}</th><th>Qualificação</th><th>Desde</th><th>Situação</th><th>Município/UF</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  return `<div class="rolagem"><table class="dados"><tr><th>Nível</th><th>CNPJ</th><th>Razão social</th><th>${desce ? 'Sócia direta' : 'É sócia de'}</th><th>Qualificação</th><th>Desde</th><th>Situação</th><th>Município/UF</th></tr>${rows}</table></div>`;
 }
 
-// atualiza nome/situação/cidade dos elementos [data-no] já desenhados
+// atualiza nome/situação/município dos elementos [data-no] já desenhados
 function preencheNos(ch) {
   const sel = ch ? `[data-no="${CSS.escape(ch)}"]` : '[data-no]';
   for (const el of $res.querySelectorAll(sel)) {
     const k = el.dataset.no;
     const meus = cls => [...el.querySelectorAll('.' + cls)].filter(x => x.closest('[data-no]') === el);
+    const sep = el.tagName === 'TR' ? '' : ' | ';
     const nm = nomeDe(k);
     for (const x of meus('nm')) if (nm) x.textContent = nm;
-    const naTabela = el.tagName === 'TR';
-    for (const x of meus('sit')) x.innerHTML = situacaoHtml(k);
-    for (const x of meus('loc')) { const l = localDe(k); x.textContent = l ? (naTabela ? l : ' · ' + l) : ''; }
-    for (const x of meus('nat')) { const n = naturezaDe(k); x.textContent = n ? ' · ' + n : ''; }
+    for (const x of meus('sit')) { const s = situacaoHtml(k); x.innerHTML = s ? sep + s : ''; }
+    for (const x of meus('loc')) { const l = localDe(k); x.textContent = l ? sep + l : ''; }
+    for (const x of meus('nat')) { const n = naturezaDe(k); x.textContent = n ? sep + n : ''; }
   }
 }
 
@@ -1148,19 +1038,22 @@ async function enriquece(arv, token) {
     const d = await consultaOnline(c);
     if (token !== buscaAtual) return;
     feitos++; if (!d) falhas++;
-    const el = info(); if (el) el.textContent = feitos < alvo.length ? `Dados online: ${feitos}/${alvo.length}` : '';
+    const el = info(); if (el) el.textContent = feitos < alvo.length ? ` (consultando BrasilAPI: ${feitos} de ${alvo.length})` : '';
     preencheNos(c);
   }));
   if (token !== buscaAtual) return;
   const el = info();
-  if (el) el.textContent = (falhas ? `${falhas} sem dados online` : '') + (lista.length > max ? ` · online limitado às primeiras ${max}` : '');
+  const partes = [];
+  if (falhas) partes.push(`${falhas} sem dados na BrasilAPI`);
+  if (lista.length > max) partes.push(`BrasilAPI consultada só para as ${max} primeiras`);
+  if (el) el.textContent = partes.length ? ` (${partes.join('; ')})` : '';
 }
 
 function exportaCsv() {
   if (!ultima) return;
   const { arv, dir } = ultima; const desce = dir === 'desce';
   const cel = v => { v = String(v ?? ''); return /[";\n]/.test(v) ? '"' + v.replace(/"/g, '""') + '"' : v; };
-  const cab = ['Nível', 'CNPJ', 'Razão social', desce ? 'Sócia direta - CNPJ' : 'Controla diretamente - CNPJ', desce ? 'Sócia direta - nome' : 'Controla diretamente - nome',
+  const cab = ['Nível', 'CNPJ', 'Razão social', desce ? 'Sócia direta - CNPJ' : 'É sócia de - CNPJ', desce ? 'Sócia direta - nome' : 'É sócia de - nome',
     'Qualificação', 'Data de entrada', 'Natureza jurídica', 'Situação', 'Município/UF', 'Observação'];
   const cnpjDe = c => ehExterior(c) ? 'Exterior' : fmtCnpj(matriz(c));
   const linhas = [cab.map(cel).join(';')];
@@ -1170,18 +1063,14 @@ function exportaCsv() {
       naturezaDe(l.chave), onlineDados.get(l.chave)?.descricao_situacao_cadastral || '', localDe(l.chave),
       l.ciclo ? 'Participação cruzada' : l.repetido ? 'Repetida (já listada em outro ramo)' : ''].map(cel).join(';'));
   }
-  baixar(`${desce ? 'participacoes' : 'controladoras'}_${ehExterior(arv.raiz) ? 'exterior' : matriz(arv.raiz)}.csv`, ['﻿' + linhas.join('\r\n')], 'text/csv;charset=utf-8');
+  baixar(`${desce ? 'participacoes' : 'socias'}_${ehExterior(arv.raiz) ? 'exterior' : matriz(arv.raiz)}.csv`, ['﻿' + linhas.join('\r\n')], 'text/csv;charset=utf-8');
 }
 
 /* ================= Eventos ================= */
-const drop = $('#drop');
-$('#btnEscolher').onclick = () => $('#arqs').click();
-$('#arqs').onchange = e => { processar(e.target.files); e.target.value = ''; };
-drop.addEventListener('dragover', e => { e.preventDefault(); drop.classList.add('sobre'); });
-drop.addEventListener('dragleave', () => drop.classList.remove('sobre'));
-drop.addEventListener('drop', e => { e.preventDefault(); drop.classList.remove('sobre'); processar(e.dataTransfer.files); });
-document.addEventListener('dragover', e => e.preventDefault());
-document.addEventListener('drop', e => e.preventDefault());
+$('#arqs').onchange = e => { const fs = [...e.target.files]; e.target.value = ''; processar(fs); };
+// soltar um arquivo fora do campo não deve abrir o arquivo no navegador
+document.addEventListener('dragover', e => { if (e.target.type !== 'file') e.preventDefault(); });
+document.addEventListener('drop', e => { if (e.target.type !== 'file') e.preventDefault(); });
 $('#btnCancelar').onclick = () => { cancelar = true; };
 
 $('#btnExportar').onclick = () => baixar('indice-participacoes.tsv', serializa(), 'text/tab-separated-values');
@@ -1189,7 +1078,7 @@ $('#btnImportar').onclick = () => $('#arqIndice').click();
 $('#arqIndice').onchange = async e => {
   const f = e.target.files[0]; e.target.value = ''; if (!f) return;
   try {
-    msgBase('', 'Importando…');
+    msgBase('', 'Importando...');
     desserializa(await f.text());
     const salvo = await salvaNoNavegador();
     atualizaStatus();
@@ -1199,35 +1088,25 @@ $('#arqIndice').onchange = async e => {
 $('#btnApagar').onclick = async () => {
   if (!confirm('Apagar a base salva neste navegador? Será preciso carregar os arquivos de novo.')) return;
   limpaBase(); try { await idbDel('base'); } catch { /* ignora */ }
-  atualizaStatus(); msgBase('ok', 'Base apagada.');
+  atualizaStatus(); msgBase('ok', 'Base local apagada.');
 };
 
-$('#btnBuscar').onclick = pesquisar;
-$('#q').addEventListener('keydown', e => { if (e.key === 'Enter') pesquisar(); });
+$('#form').addEventListener('submit', e => { e.preventDefault(); pesquisar(); });
 
+$res.addEventListener('change', e => {
+  if (e.target.name !== 'vis') return;
+  $('#vArvore').hidden = e.target.value !== 'arvore'; $('#vTabela').hidden = e.target.value !== 'tabela';
+});
 $res.addEventListener('click', e => {
-  const tab = e.target.closest('[data-tab]');
-  if (tab) {
-    for (const b of $res.querySelectorAll('[data-tab]')) b.classList.toggle('ativo', b === tab);
-    $('#vArvore').hidden = tab.dataset.tab !== 'arvore'; $('#vTabela').hidden = tab.dataset.tab !== 'tabela';
-    return;
-  }
   const b = e.target.closest('[data-acao]'); if (!b) return;
-  e.preventDefault();                                     // evita abrir/fechar o <details> ao clicar num botão
+  e.preventDefault();                                     // evita seguir o link e abrir/fechar o <details>
   const ch = b.dataset.chave;
   switch (b.dataset.acao) {
     case 'ir':
       $('#q').value = ehExterior(ch) ? nomeDe(ch) : fmtCnpj(matriz(ch));
       executa(ch, b.dataset.dir || direcao());
-      window.scrollTo({ top: $res.offsetTop - 12, behavior: 'smooth' });
+      window.scrollTo({ top: $res.offsetTop - 8 });
       break;
-    case 'copiar': {
-      const t = matriz(ch);
-      (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(
-        () => { const o = b.textContent; b.textContent = 'Copiado'; setTimeout(() => { b.textContent = o; }, 1200); },
-        () => prompt('CNPJ:', t));
-      break;
-    }
     case 'expandir': for (const d of $res.querySelectorAll('ul.arvore details')) d.open = true; break;
     case 'recolher': for (const d of $res.querySelectorAll('ul.arvore details')) d.open = false; break;
     case 'csv': exportaCsv(); break;
@@ -1235,8 +1114,8 @@ $res.addEventListener('click', e => {
 });
 
 (async () => {
-  const [, nuvem] = await Promise.all([abreBaseSalva(), detectaNuvem()]);
-  if (nuvem && !temBase()) $('#boxLocal').open = false;
+  await Promise.all([abreBaseSalva(), detectaNuvem()]);
+  if (!Nuvem.url || temBase()) $('#boxLocal').open = true;
   atualizaStatus();
 })();
 </script>
